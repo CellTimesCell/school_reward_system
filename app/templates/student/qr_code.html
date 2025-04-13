@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-qrcode me-2"></i> Your QR Code</h5>
+    </div>
+    <div class="card-body">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="qr-code-container">
+                    <img src="{{ qr_code_img }}" alt="Student QR code" class="qr-code-image">
+                    <h5 class="mt-3">{{ current_user.first_name }} {{ current_user.last_name }}</h5>
+                    <p class="text-muted">ID: {{ current_user.unique_id }}</p>
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i> Show this QR code to your teacher to receive points.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

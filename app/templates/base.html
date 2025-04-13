@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} - {% endif %}School Points System</title>
+
+    <!-- CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container-fluid px-0">
+        <!-- Top navigation bar -->
+        <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url_for('auth.index') }}">
+                    {% if school and school.logo_url %}
+                        <img src="{{ school.logo_url }}" alt="School Logo" height="40" class="me-2">
+                    {% else %}
+                        <i class="fas fa-graduation-cap me-2"></i>
+                    {% endif %}
+                    <span>Hill PK-8 / School Reward System</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        {% if current_user.is_authenticated %}
+                            <li class="nav-item">
+                                <span class="nav-link">{{ current_user.first_name }} {{ current_user.last_name }}</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page content -->
+        <div class="container mt-4">
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Main content -->
+            <div class="row">
+                {% if current_user.is_authenticated %}
+                    <div class="col-md-3">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fas fa-bars me-2"></i> Menu
+                            </div>
+                            <div class="list-group list-group-flush">
+                                {% if current_user.role == 'student' %}
+                                    <a href="{{ url_for('student.dashboard') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'student.dashboard' %}active{% endif %}">
+                                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                                    </a>
+                                    <a href="{{ url_for('student.qr_code') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'student.qr_code' %}active{% endif %}">
+                                        <i class="fas fa-qrcode me-2"></i> QR Code
+                                    </a>
+                                    <a href="{{ url_for('student.leaderboard') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'student.leaderboard' %}active{% endif %}">
+                                        <i class="fas fa-trophy me-2"></i> Leaderboard
+                                    </a>
+                                    <a href="{{ url_for('student.profile') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'student.profile' %}active{% endif %}">
+                                        <i class="fas fa-user me-2"></i> Profile
+                                    </a>
+                                {% elif current_user.role == 'teacher' %}
+                                    <a href="{{ url_for('teacher.dashboard') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'teacher.dashboard' %}active{% endif %}">
+                                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                                    </a>
+                                    <a href="{{ url_for('teacher.scan_qr') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'teacher.scan_qr' %}active{% endif %}">
+                                        <i class="fas fa-camera me-2"></i> Scan QR
+                                    </a>
+                                    <a href="{{ url_for('teacher.teacher_board') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'teacher.teacher_board' %}active{% endif %}">
+                                        <i class="fas fa-chalkboard-teacher me-2"></i> Teacher Board
+                                    </a>
+                                    <a href="{{ url_for('teacher.profile') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'teacher.profile' %}active{% endif %}">
+                                        <i class="fas fa-user me-2"></i> Profile
+                                    </a>
+                                {% elif current_user.role == 'admin' %}
+                                    <a href="{{ url_for('admin.dashboard') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                                    </a>
+                                    <a href="{{ url_for('admin.teachers_list') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin.teachers_list' %}active{% endif %}">
+                                        <i class="fas fa-chalkboard-teacher me-2"></i> Teachers
+                                    </a>
+                                    <a href="{{ url_for('admin.students_list') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin.students_list' %}active{% endif %}">
+                                        <i class="fas fa-user-graduate me-2"></i> Students
+                                    </a>
+                                    <a href="{{ url_for('admin.add_teacher') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin.add_teacher' %}active{% endif %}">
+                                        <i class="fas fa-user-plus me-2"></i> Add Teacher
+                                    </a>
+                                    <!-- New menu item for adding students -->
+                                    <a href="{{ url_for('admin.add_student') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin.add_student' %}active{% endif %}">
+                                        <i class="fas fa-user-plus me-2"></i> Add Student
+                                    </a>
+                                    <a href="{{ url_for('admin.transactions_list') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin.transactions_list' %}active{% endif %}">
+                                        <i class="fas fa-exchange-alt me-2"></i> Transaction Log
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        {% block content %}{% endblock %}
+                    </div>
+                {% else %}
+                    <div class="col-12">
+                        {% block full_content %}{% endblock %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-light mt-5 py-3 text-center">
+            <div class="container">
+                <p class="text-muted mb-0">© 2025 School Reward System. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

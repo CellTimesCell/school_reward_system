@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block full_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card auth-container">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">Student Registration</h4>
+            </div>
+            <div class="card-body">
+                <div class="auth-logo">
+                    {% if school and school.logo_url %}
+                        <img src="{{ school.logo_url }}" alt="School Logo" class="img-fluid">
+                    {% else %}
+                        <i class="fas fa-graduation-cap fa-5x text-primary"></i>
+                    {% endif %}
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.first_name.id }}" class="form-label">{{ form.first_name.label }}</label>
+                            {{ form.first_name(class="form-control", placeholder="Enter first name") }}
+                            {% for error in form.first_name.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.last_name.id }}" class="form-label">{{ form.last_name.label }}</label>
+                            {{ form.last_name(class="form-control", placeholder="Enter last name") }}
+                            {% for error in form.last_name.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.username.id }}" class="form-label">{{ form.username.label }}</label>
+                        {{ form.username(class="form-control", placeholder="Create a username") }}
+                        {% for error in form.username.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.email.id }}" class="form-label">{{ form.email.label }}</label>
+                        {{ form.email(class="form-control", placeholder="Enter email address") }}
+                        {% for error in form.email.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password.id }}" class="form-label">{{ form.password.label }}</label>
+                        {{ form.password(class="form-control", placeholder="Enter password") }}
+                        {% for error in form.password.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password2.id }}" class="form-label">{{ form.password2.label }}</label>
+                        {{ form.password2(class="form-control", placeholder="Confirm password") }}
+                        {% for error in form.password2.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

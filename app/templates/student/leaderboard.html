@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-trophy me-2"></i> Leaderboard</h5>
+    </div>
+    <div class="card-body">
+        {% if student_points %}
+            <div class="table-responsive">
+                <table class="table table-hover leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Student</th>
+                            <th scope="col">Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student, points in student_points %}
+                            <tr {% if student.id == current_user.id %}class="table-primary"{% endif %}>
+                                <td>
+                                    <span class="rank-number {% if loop.index <= 3 %}top-rank{% endif %}">
+                                        {{ loop.index }}
+                                    </span>
+                                </td>
+                                <td>{{ student.first_name }} {{ student.last_name }}</td>
+                                <td>
+                                    <strong>{{ points }}</strong>
+                                    {% if loop.index == 1 %}
+                                        <i class="fas fa-crown text-warning ms-2"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                <p class="text-muted">No data available to display.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

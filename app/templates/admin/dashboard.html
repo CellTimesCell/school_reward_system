@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user-graduate fa-3x text-primary mb-3"></i>
+                <h3>{{ student_count }}</h3>
+                <p class="text-muted mb-0">Total Students</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-chalkboard-teacher fa-3x text-primary mb-3"></i>
+                <h3>{{ teacher_count }}</h3>
+                <p class="text-muted mb-0">Total Teachers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-exchange-alt fa-3x text-primary mb-3"></i>
+                <h3>{{ transaction_count }}</h3>
+                <p class="text-muted mb-0">Total Transactions</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i> System Activity</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <div class="card bg-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-tasks me-2"></i> Quick Actions</h5>
+                        <div class="list-group mt-3">
+                            <a href="{{ url_for('admin.add_teacher') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-user-plus me-2"></i> Add New Teacher
+                            </a>
+                            <a href="{{ url_for('admin.teachers_list') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-users me-2"></i> View Teachers List
+                            </a>
+                            <a href="{{ url_for('admin.students_list') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-user-graduate me-2"></i> View Students List
+                            </a>
+                            <a href="{{ url_for('admin.transactions_list') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-history me-2"></i> View Transaction Log
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-info-circle me-2"></i> System Information</h5>
+                        <ul class="list-group mt-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Application Version
+                                <span class="badge bg-primary rounded-pill">1.0.0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Database
+                                <span class="badge bg-success rounded-pill">Active</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Last Update
+                                <span class="badge bg-secondary rounded-pill">{{ current_user.updated_at.strftime('%m/%d/%Y') }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-history me-2"></i> Recent Transactions</h5>
+    </div>
+    <div class="card-body">
+        {% if recent_transactions %}
+            <div class="transaction-list table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student</th>
+                            <th>Teacher</th>
+                            <th>Points</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in recent_transactions %}
+                            <tr>
+                                <td>{{ transaction.id }}</td>
+                                <td>{{ transaction.student.first_name }} {{ transaction.student.last_name }}</td>
+                                <td>{{ transaction.teacher.first_name }} {{ transaction.teacher.last_name }}</td>
+                                <td><span class="badge bg-success">+{{ transaction.points }}</span></td>
+                                <td>{{ transaction.description|truncate(30) }}</td>
+                                <td>{{ transaction.created_at.strftime('%m/%d/%Y %H:%M') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('admin.transactions_list') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-2"></i> View All Transactions
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-list-alt fa-4x text-muted mb-3"></i>
+                <p class="text-muted">No data to display.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

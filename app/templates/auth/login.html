@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block full_content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card auth-container">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">Login to System</h4>
+            </div>
+            <div class="card-body">
+                <div class="auth-logo">
+                    {% if school and school.logo_url %}
+                        <img src="{{ school.logo_url }}" alt="School Logo" class="img-fluid">
+                    {% else %}
+                        <i class="fas fa-graduation-cap fa-5x text-primary"></i>
+                    {% endif %}
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.login') }}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label for="{{ form.username.id }}" class="form-label">{{ form.username.label }}</label>
+                        {{ form.username(class="form-control", placeholder="Enter username") }}
+                        {% for error in form.username.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password.id }}" class="form-label">{{ form.password.label }}</label>
+                        {{ form.password(class="form-control", placeholder="Enter password") }}
+                        {% for error in form.password.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
