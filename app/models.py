@@ -14,13 +14,13 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     email = db.Column(db.String(120), unique=True, index=True)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(255))  # Increased length for MySQL compatibility
     role = db.Column(db.String(20))  # 'student', 'teacher', 'admin'
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    unique_id = db.Column(db.String(36), unique=True, index=True, default=lambda: str(uuid.uuid4()))
+    unique_id = db.Column(db.String(36), unique=True, index=True)  # Default value handled in __init__
 
     # Cached aggregated values
     _total_points = db.Column(db.Integer, default=0)  # Cached points sum for student
@@ -32,14 +32,15 @@ class User(UserMixin, db.Model):
     points_given = db.relationship('PointTransaction', foreign_keys='PointTransaction.teacher_id', backref='teacher',
                                    lazy='dynamic')
 
-    # Composite indexes for query optimization
+    # Composite indexes for query optimization - shortened for MySQL compatibility
     __table_args__ = (
-        Index('idx_user_role_unique_id', 'role', 'unique_id'),
+        Index('idx_user_role_uid', 'role', 'unique_id'),
     )
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
-        if self.role == 'student' and not self.unique_id:
+        # Ensure unique_id is set
+        if not kwargs.get('unique_id'):
             self.unique_id = str(uuid.uuid4())
 
     def set_password(self, password):
@@ -129,9 +130,10 @@ class PointTransaction(db.Model):
     description = db.Column(db.String(256))
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
+    # Shortened index names for MySQL compatibility
     __table_args__ = (
-        Index('idx_transaction_student_teacher', 'student_id', 'teacher_id'),
-        Index('idx_transaction_teacher_date', 'teacher_id', 'created_at'),
+        Index('idx_trans_stu_tea', 'student_id', 'teacher_id'),
+        Index('idx_trans_tea_date', 'teacher_id', 'created_at'),
     )
 
     def __repr__(self):
