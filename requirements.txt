@@ -12,21 +12,11 @@ email-validator
 WTForms
 SQLAlchemy
 Werkzeug
-gunicorn
-uwsgi
-redis
-psycopg2-binary
+mysqlclient  # Replace psycopg2-binary
 PyJWT
-celery
-flower
-prometheus-client
 alembic
 Jinja2
 MarkupSafe
 itsdangerous
-amqp
-kombu
-billiard
-vine
 click
 blinker
