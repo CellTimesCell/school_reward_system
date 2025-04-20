@@ -38,13 +38,17 @@ def create_app(config_name=None):
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
 
-    # Initialize cache
+    # Initialize cache with simple in-memory cache
     from app.cache import init_cache
     cache = init_cache(app)
 
-    # Initialize Celery
-    from app.celery import init_celery
-    init_celery(app)
+    # Initialize Celery if available, otherwise use fallback
+    try:
+        from app.celery import init_celery
+        init_celery(app)
+        app.logger.info("Celery initialized successfully")
+    except Exception as e:
+        app.logger.warning(f"Celery initialization failed: {str(e)}. Background tasks will run synchronously or not at all.")
 
     # Configure logging
     if not os.path.exists('logs'):
@@ -67,15 +71,19 @@ def create_app(config_name=None):
     app.register_blueprint(admin_bp)
     app.register_blueprint(api_bp)
 
-    # Configure Prometheus monitoring (if enabled)
-    if app.config.get('PROMETHEUS_METRICS'):
-        from prometheus_client import make_wsgi_app
-        from werkzeug.middleware.dispatcher import DispatcherMiddleware
+    # Configure Prometheus monitoring only if enabled and available
+    if app.config.get('PROMETHEUS_METRICS', False):
+        try:
+            from prometheus_client import make_wsgi_app
+            from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
-        # Add Prometheus metrics
-        app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
-            '/metrics': make_wsgi_app()
-        })
+            # Add Prometheus metrics
+            app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+                '/metrics': make_wsgi_app()
+            })
+            app.logger.info("Prometheus metrics enabled")
+        except ImportError:
+            app.logger.warning("Prometheus client not available - metrics disabled")
 
     @login_manager.user_loader
     def load_user(user_id):
