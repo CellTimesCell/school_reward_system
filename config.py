@@ -9,7 +9,7 @@ class Config:
 
     # database
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                          'mysql://yourusername:your-password@yourusername.mysql.pythonanywhere-services.com/yourusername$school_rewards'
+                        'mysql://celltimescell:zeusomerta@celltimescell.mysql.pythonanywhere-services.com/celltimescell$default'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Database connection pool settings
